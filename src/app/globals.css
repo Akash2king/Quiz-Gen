@@ -18,7 +18,7 @@ body {
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
+    --muted: 210 40% 92%;
     --muted-foreground: 0 0% 45.1%;
     --accent: 181 100% 74%;
     --accent-foreground: 210 29% 24%;
@@ -41,6 +41,9 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --shadow-light: 210 40% 100%;
+    --shadow-dark: 210 25% 85%;
   }
   .dark {
     --background: 210 29% 10%;
@@ -75,6 +78,9 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --shadow-light: 210 29% 15%;
+    --shadow-dark: 210 30% 5%;
   }
 }
 
@@ -84,5 +90,14 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .shadow-3d {
+    box-shadow: 6px 6px 12px hsl(var(--shadow-dark)), -6px -6px 12px hsl(var(--shadow-light));
+  }
+  .shadow-3d-inset {
+    box-shadow: inset 4px 4px 8px hsl(var(--shadow-dark)), inset -4px -4px 8px hsl(var(--shadow-light));
   }
 }

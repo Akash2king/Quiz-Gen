@@ -72,7 +72,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
 
   if (internalQuestions.length === 0) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-2xl mx-auto shadow-3d bg-card/80 backdrop-blur-sm">
         <CardContent className="p-6 text-center text-muted-foreground">
           Click 'Generate with AI' to start a new quiz!
         </CardContent>
@@ -82,7 +82,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
 
   if (quizFinished) {
     return (
-      <Card className="w-full max-w-2xl mx-auto text-center shadow-2xl animate-in fade-in zoom-in-95">
+      <Card className="w-full max-w-2xl mx-auto text-center shadow-3d animate-in fade-in zoom-in-95 bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="font-headline text-2xl sm:text-3xl">Quiz Complete!</CardTitle>
         </CardHeader>
@@ -109,7 +109,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl">
+    <Card className="w-full max-w-2xl mx-auto shadow-3d bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <Progress value={((currentQuestionIndex + 1) / internalQuestions.length) * 100} className="mb-4" />
         <CardDescription>
@@ -129,19 +129,18 @@ export function Quiz({ questions, onRestart }: QuizProps) {
             {currentQuestion.options.map((option, index) => {
               const isCorrect = option === currentQuestion.correctAnswer;
               const isSelected = option === selectedAnswer;
-              const variant = isAnswered ? (isCorrect ? 'correct' : isSelected ? 'incorrect' : 'default') : 'default';
 
               return (
                 <Label
                   key={index}
                   htmlFor={`option-${index}`}
                   className={cn(
-                    "flex items-center p-3 sm:p-4 rounded-md border-2 transition-all text-sm sm:text-base",
-                    !isAnswered && "cursor-pointer hover:border-primary/80",
-                    isAnswered && "cursor-not-allowed",
-                    variant === 'default' && "border-border",
-                    variant === 'correct' && "border-accent bg-accent/20 text-accent-foreground font-semibold",
-                    variant === 'incorrect' && "border-destructive bg-destructive/20 text-destructive-foreground"
+                    "flex items-center p-3 sm:p-4 rounded-lg transition-all duration-150 ease-in-out text-sm sm:text-base",
+                    isAnswered ? "cursor-not-allowed" : "cursor-pointer hover:scale-[1.02]",
+                    isSelected || (isAnswered && (isCorrect || isSelected)) ? 'shadow-3d-inset' : 'shadow-3d',
+                    isAnswered && isCorrect && "bg-accent/20 text-accent-foreground font-semibold",
+                    isAnswered && isSelected && !isCorrect && "bg-destructive/20 text-destructive-foreground",
+                    isAnswered && !isSelected && !isCorrect && "opacity-60"
                   )}
                 >
                   <RadioGroupItem value={option} id={`option-${index}`} className="mr-4" />

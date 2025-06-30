@@ -27,7 +27,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-background font-body">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-gradient-to-br from-background via-background to-muted font-body">
       <div className="w-full max-w-4xl space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-headline text-primary">
