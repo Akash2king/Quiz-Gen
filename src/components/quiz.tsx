@@ -84,14 +84,14 @@ export function Quiz({ questions, onRestart }: QuizProps) {
     return (
       <Card className="w-full max-w-2xl mx-auto text-center shadow-2xl animate-in fade-in zoom-in-95">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">Quiz Complete!</CardTitle>
+          <CardTitle className="font-headline text-2xl sm:text-3xl">Quiz Complete!</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Award className="mx-auto h-24 w-24 text-chart-4" />
-          <p className="text-xl">
+          <Award className="mx-auto h-20 w-20 sm:h-24 sm:w-24 text-chart-4" />
+          <p className="text-lg">
             Your final score is:
           </p>
-          <p className="text-5xl font-bold text-primary">
+          <p className="text-4xl sm:text-5xl font-bold text-primary">
             {score} / {internalQuestions.length}
           </p>
           <p className="text-muted-foreground">
@@ -115,7 +115,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
         <CardDescription>
           Question {currentQuestionIndex + 1} of {internalQuestions.length}
         </CardDescription>
-        <CardTitle className="font-headline text-2xl">
+        <CardTitle className="font-headline text-xl sm:text-2xl">
           {currentQuestion.questionText}
         </CardTitle>
       </CardHeader>
@@ -136,7 +136,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
                   key={index}
                   htmlFor={`option-${index}`}
                   className={cn(
-                    "flex items-center p-4 rounded-md border-2 transition-all",
+                    "flex items-center p-3 sm:p-4 rounded-md border-2 transition-all text-sm sm:text-base",
                     !isAnswered && "cursor-pointer hover:border-primary/80",
                     isAnswered && "cursor-not-allowed",
                     variant === 'default' && "border-border",

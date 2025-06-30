@@ -101,30 +101,25 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">AI Question Generator</DialogTitle>
+          <DialogTitle className="font-headline text-xl sm:text-2xl">AI Question Generator</DialogTitle>
           <DialogDescription>
             Enter any topic to generate new quiz questions using AI.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="topic-input" className="text-right">
-                Topic
-              </Label>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="topic-input">Topic</Label>
               <Input
                 id="topic-input"
                 name="topic"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                className="col-span-3"
                 placeholder="e.g., Roman History, The Solar System..."
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="question-count" className="text-right">
-                Number
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="question-count">Number of Questions</Label>
               <Input
                 id="question-count"
                 name="count"
@@ -133,7 +128,6 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
                 onChange={(e) => setCount(e.target.value)}
                 min="1"
                 max="50"
-                className="col-span-3"
                 placeholder="1-50"
               />
             </div>
