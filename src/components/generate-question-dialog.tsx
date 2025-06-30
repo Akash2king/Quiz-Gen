@@ -54,6 +54,12 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
     }
   };
 
+  const handleClearAndReset = () => {
+    setGeneratedQA(null);
+    setTopic('');
+    setCount('1');
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!topic || !count) {
@@ -186,7 +192,7 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
                 <PlusCircle className="mr-2" />
                 Create Quiz with {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''}
               </Button>
-              <Button variant="outline" size="icon" onClick={() => setGeneratedQA(null)} aria-label="Clear results">
+              <Button variant="outline" size="icon" onClick={handleClearAndReset} aria-label="Clear results and reset form">
                   <Trash2 className="h-4 w-4" />
               </Button>
             </div>
