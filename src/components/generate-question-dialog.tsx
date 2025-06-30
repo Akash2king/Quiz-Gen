@@ -11,13 +11,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,8 +20,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Lightbulb, HelpCircle, Loader2, PlusCircle } from 'lucide-react';
-import { topics } from '@/lib/topics';
+import { Lightbulb, HelpCircle, Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { generateQuestionAction } from '@/app/actions';
 import { type GenerateQuestionOutput } from '@/ai/flows/generate-question';
 import { useToast } from '@/hooks/use-toast';
@@ -68,7 +60,7 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Please select a topic and enter the number of questions.',
+        description: 'Please enter a topic and the number of questions.',
       });
       return;
     }
@@ -105,29 +97,23 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">AI Question Generator</DialogTitle>
           <DialogDescription>
-            Select a cybersecurity topic to generate new quiz questions using AI.
+            Enter a cybersecurity topic to generate new quiz questions using AI.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="topic-select" className="text-right">
+              <Label htmlFor="topic-input" className="text-right">
                 Topic
               </Label>
-              <div className="col-span-3">
-                <Select onValueChange={setTopic} value={topic}>
-                  <SelectTrigger id="topic-select">
-                    <SelectValue placeholder="Select a topic..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {topics.map((t) => (
-                      <SelectItem key={t} value={t}>
-                        {t}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                id="topic-input"
+                name="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="col-span-3"
+                placeholder="e.g., Phishing, Zero-Day Attack..."
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="question-count" className="text-right">
@@ -149,7 +135,7 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
           <DialogFooter>
             <Button type="submit" disabled={isPending || !topic || !count}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Generate
+              {generatedQA ? 'Re-generate' : 'Generate'}
             </Button>
           </DialogFooter>
         </form>
@@ -195,10 +181,15 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
                 ))}
               </Accordion>
             </div>
-            <Button onClick={handleAddQuestionsToQuiz} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-              <PlusCircle className="mr-2" />
-              Add {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''} to Quiz
-            </Button>
+            <div className="flex w-full items-center gap-2">
+              <Button onClick={handleAddQuestionsToQuiz} className="flex-grow bg-accent text-accent-foreground hover:bg-accent/90">
+                <PlusCircle className="mr-2" />
+                Add {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''} to Quiz
+              </Button>
+              <Button variant="outline" size="icon" onClick={() => setGeneratedQA(null)} aria-label="Clear results">
+                  <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>
