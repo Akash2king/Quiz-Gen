@@ -21,15 +21,19 @@ const GenerateQuestionInputSchema = z.object({
 });
 export type GenerateQuestionInput = z.infer<typeof GenerateQuestionInputSchema>;
 
-const QuestionAnswerPairSchema = z.object({
-  question: z.string().describe('The generated cybersecurity question.'),
-  answer: z.string().describe('The answer to the generated question.'),
+const MultipleChoiceQuestionSchema = z.object({
+  questionText: z.string().describe('The generated cybersecurity question.'),
+  options: z.array(z.string()).length(4).describe('An array of 4 possible answers (multiple choice).'),
+  correctAnswer: z.string().describe('The correct answer from the options array.'),
+}).refine(data => data.options.includes(data.correctAnswer), {
+    message: "Correct answer must be one of the options provided.",
 });
+
 
 const GenerateQuestionOutputSchema = z.object({
   questions: z
-    .array(QuestionAnswerPairSchema)
-    .describe('An array of generated questions and answers.'),
+    .array(MultipleChoiceQuestionSchema)
+    .describe('An array of generated multiple choice questions.'),
 });
 export type GenerateQuestionOutput = z.infer<typeof GenerateQuestionOutputSchema>;
 
@@ -43,12 +47,18 @@ const generateQuestionPrompt = ai.definePrompt({
   name: 'generateQuestionPrompt',
   input: {schema: GenerateQuestionInputSchema},
   output: {schema: GenerateQuestionOutputSchema},
-  prompt: `You are a cybersecurity expert who generates quiz questions on specific topics.
+  prompt: `You are a cybersecurity expert who generates multiple choice quiz questions on specific topics.
 
-  Generate {{{count}}} quiz question(s) and their corresponding answers based on the following topic:
+  Generate {{{count}}} quiz question(s) based on the following topic:
   Topic: {{{topic}}}
 
-  Format your response as a JSON object with a "questions" key, which is an array of objects, each containing a "question" and "answer".
+  For each question:
+  1. Provide a clear question text.
+  2. Provide exactly 4 multiple choice options.
+  3. One of the options must be the correct answer.
+  4. Indicate which of the options is the correct answer. The correct answer MUST be present in the options array.
+
+  Format your response as a JSON object with a "questions" key, which is an array of objects, each containing a "questionText", an "options" array, and a "correctAnswer".
   `,
 });
 

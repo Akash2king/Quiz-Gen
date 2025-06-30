@@ -27,13 +27,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Lightbulb, HelpCircle, Loader2 } from 'lucide-react';
+import { Lightbulb, HelpCircle, Loader2, PlusCircle } from 'lucide-react';
 import { topics } from '@/lib/topics';
 import { generateQuestionAction } from '@/app/actions';
 import { type GenerateQuestionOutput } from '@/ai/flows/generate-question';
 import { useToast } from '@/hooks/use-toast';
+import { type Question } from '@/lib/questions';
 
-export function GenerateQuestionDialog() {
+interface GenerateQuestionDialogProps {
+  onAddQuestions: (questions: Question[]) => void;
+}
+
+export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState('1');
@@ -47,6 +52,13 @@ export function GenerateQuestionDialog() {
       setTopic('');
       setCount('1');
       setGeneratedQA(null);
+    }
+  };
+  
+  const handleAddQuestionsToQuiz = () => {
+    if (generatedQA) {
+      onAddQuestions(generatedQA.questions);
+      handleOpenChange(false); // Close the dialog
     }
   };
 
@@ -147,31 +159,46 @@ export function GenerateQuestionDialog() {
             <p className="ml-4 text-muted-foreground">Generating, please wait...</p>
           </div>
         )}
-        {generatedQA && (
-          <div className="mt-6 max-h-[40vh] overflow-y-auto pr-2 space-y-2 animate-in fade-in">
-            <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-              {generatedQA.questions.map((qa, index) => (
-                <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger>
-                    <span className="font-headline text-left">Question {index + 1}</span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Alert>
-                        <HelpCircle className="h-4 w-4" />
-                        <AlertTitle className="font-headline">Question</AlertTitle>
-                        <AlertDescription>{qa.question}</AlertDescription>
-                      </Alert>
-                      <Alert className="border-accent/50">
-                        <Lightbulb className="h-4 w-4 text-accent-foreground" />
-                        <AlertTitle className="font-headline">Answer</AlertTitle>
-                        <AlertDescription>{qa.answer}</AlertDescription>
-                      </Alert>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+        {generatedQA && generatedQA.questions.length > 0 && (
+          <div className="mt-6 space-y-4 animate-in fade-in">
+            <div className="max-h-[30vh] overflow-y-auto pr-2 space-y-2">
+              <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                {generatedQA.questions.map((qa, index) => (
+                  <AccordionItem value={`item-${index}`} key={index}>
+                    <AccordionTrigger>
+                      <span className="font-headline text-left">Question {index + 1}</span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4">
+                        <Alert>
+                          <HelpCircle className="h-4 w-4" />
+                          <AlertTitle className="font-headline">Question</AlertTitle>
+                          <AlertDescription>{qa.questionText}</AlertDescription>
+                        </Alert>
+                        <Alert className="border-primary/30">
+                          <Lightbulb className="h-4 w-4" />
+                          <AlertTitle className="font-headline">Options</AlertTitle>
+                          <AlertDescription>
+                            <ul className="list-disc pl-5 space-y-1">
+                              {qa.options.map((option, i) => (
+                                <li key={i} className={option === qa.correctAnswer ? 'font-bold text-accent-foreground' : ''}>
+                                  {option}
+                                  {option === qa.correctAnswer && <span className="text-accent font-semibold"> (Correct)</span>}
+                                </li>
+                              ))}
+                            </ul>
+                          </AlertDescription>
+                        </Alert>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+            <Button onClick={handleAddQuestionsToQuiz} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              <PlusCircle className="mr-2" />
+              Add {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''} to Quiz
+            </Button>
           </div>
         )}
       </DialogContent>

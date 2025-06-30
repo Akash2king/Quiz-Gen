@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { initialQuestions, type Question } from '@/lib/questions';
+import { type Question } from '@/lib/questions';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -14,25 +14,38 @@ const shuffleArray = <T,>(array: T[]): T[] => {
     return [...array].sort(() => Math.random() - 0.5);
 };
 
-export function Quiz() {
-  const [questions, setQuestions] = useState<Question[]>([]);
+interface QuizProps {
+  questions: Question[];
+  onRestart: () => void;
+}
+
+export function Quiz({ questions, onRestart }: QuizProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
-
+  
+  const [internalQuestions, setInternalQuestions] = useState<Question[]>([]);
+  
   useEffect(() => {
-    const shuffledQuestions = shuffleArray(initialQuestions).map(q => ({
-        ...q,
-        options: shuffleArray(q.options)
+    const shuffledAndReadyQuestions = questions.map(q => ({
+      ...q,
+      options: shuffleArray(q.options)
     }));
-    setQuestions(shuffledQuestions);
-  }, []);
+    setInternalQuestions(shuffledAndReadyQuestions);
+    
+    // Reset quiz state
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setQuizFinished(false);
+  }, [questions]);
 
   const currentQuestion = useMemo(() => {
-    return questions[currentQuestionIndex];
-  }, [currentQuestionIndex, questions]);
+    return internalQuestions[currentQuestionIndex];
+  }, [currentQuestionIndex, internalQuestions]);
 
   const handleAnswerSubmit = () => {
     if (!selectedAnswer) return;
@@ -46,7 +59,7 @@ export function Quiz() {
   const handleNextQuestion = () => {
     setSelectedAnswer(null);
     setIsAnswered(false);
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < internalQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setQuizFinished(true);
@@ -54,19 +67,10 @@ export function Quiz() {
   };
 
   const handleRestartQuiz = () => {
-    const shuffledQuestions = shuffleArray(initialQuestions).map(q => ({
-        ...q,
-        options: shuffleArray(q.options)
-    }));
-    setQuestions(shuffledQuestions);
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setSelectedAnswer(null);
-    setIsAnswered(false);
-    setQuizFinished(false);
+    onRestart();
   };
 
-  if (questions.length === 0) {
+  if (internalQuestions.length === 0) {
     return <Card className="w-full max-w-2xl mx-auto"><CardContent className="p-6 text-center text-muted-foreground">Loading Quiz...</CardContent></Card>;
   }
 
@@ -82,10 +86,10 @@ export function Quiz() {
             Your final score is:
           </p>
           <p className="text-5xl font-bold text-primary">
-            {score} / {questions.length}
+            {score} / {internalQuestions.length}
           </p>
           <p className="text-muted-foreground">
-            {score / questions.length > 0.7 ? "Excellent work! You're a cybersecurity pro." : "Great effort! Keep learning and try again."}
+            {score / internalQuestions.length > 0.7 ? "Excellent work! You're a cybersecurity pro." : "Great effort! Keep learning and try again."}
           </p>
         </CardContent>
         <CardFooter className="justify-center">
@@ -101,9 +105,9 @@ export function Quiz() {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-2xl">
       <CardHeader>
-        <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} className="mb-4" />
+        <Progress value={((currentQuestionIndex + 1) / internalQuestions.length) * 100} className="mb-4" />
         <CardDescription>
-          Question {currentQuestionIndex + 1} of {questions.length}
+          Question {currentQuestionIndex + 1} of {internalQuestions.length}
         </CardDescription>
         <CardTitle className="font-headline text-2xl">
           {currentQuestion.questionText}
@@ -147,7 +151,7 @@ export function Quiz() {
       <CardFooter className="justify-end">
         {isAnswered ? (
           <Button onClick={handleNextQuestion}>
-            {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            {currentQuestionIndex === internalQuestions.length - 1 ? 'Finish Quiz' : 'Next Question'}
           </Button>
         ) : (
           <Button onClick={handleAnswerSubmit} disabled={!selectedAnswer}>
