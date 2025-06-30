@@ -20,6 +20,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Lightbulb, HelpCircle, Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { generateQuestionAction } from '@/app/actions';
 import { type GenerateQuestionOutput } from '@/ai/flows/generate-question';
@@ -34,6 +41,7 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
   const [isOpen, setIsOpen] = useState(false);
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState('1');
+  const [level, setLevel] = useState('Beginner');
   const [generatedQA, setGeneratedQA] = useState<GenerateQuestionOutput | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -41,8 +49,8 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
-      setTopic('');
-      setCount('1');
+      // Reset all fields on close
+      handleClearAndReset();
       setGeneratedQA(null);
     }
   };
@@ -58,6 +66,7 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
     setGeneratedQA(null);
     setTopic('');
     setCount('1');
+    setLevel('Beginner');
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -74,6 +83,7 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
     const formData = new FormData();
     formData.append('topic', topic);
     formData.append('count', count);
+    formData.append('level', level);
     setGeneratedQA(null);
 
     startTransition(async () => {
@@ -118,18 +128,33 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
                 placeholder="e.g., Roman History, The Solar System..."
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="question-count">Number of Questions</Label>
-              <Input
-                id="question-count"
-                name="count"
-                type="number"
-                value={count}
-                onChange={(e) => setCount(e.target.value)}
-                min="1"
-                max="50"
-                placeholder="1-50"
-              />
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="question-count">Number of Questions</Label>
+                  <Input
+                    id="question-count"
+                    name="count"
+                    type="number"
+                    value={count}
+                    onChange={(e) => setCount(e.target.value)}
+                    min="1"
+                    max="50"
+                    placeholder="1-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty-level">Difficulty Level</Label>
+                  <Select name="level" value={level} onValueChange={setLevel}>
+                    <SelectTrigger id="difficulty-level">
+                      <SelectValue placeholder="Select level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Pro">Pro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
             </div>
           </div>
           <DialogFooter>

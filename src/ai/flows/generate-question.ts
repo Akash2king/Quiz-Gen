@@ -18,13 +18,23 @@ const GenerateQuestionInputSchema = z.object({
     .optional()
     .default(1)
     .describe('The number of questions to generate. Maximum 50.'),
+  level: z
+    .string()
+    .optional()
+    .default('Beginner')
+    .describe('The difficulty level of the questions.'),
 });
 export type GenerateQuestionInput = z.infer<typeof GenerateQuestionInputSchema>;
 
 const MultipleChoiceQuestionSchema = z.object({
   questionText: z.string().describe('The generated question.'),
-  options: z.array(z.string()).length(4).describe('An array of 4 possible answers (multiple choice).'),
-  correctAnswer: z.string().describe('The correct answer from the options array.'),
+  options: z
+    .array(z.string())
+    .length(4)
+    .describe('An array of 4 possible answers (multiple choice).'),
+  correctAnswer: z
+    .string()
+    .describe('The correct answer from the options array.'),
 }).refine(data => data.options.includes(data.correctAnswer), {
     message: "Correct answer must be one of the options provided.",
 });
@@ -49,11 +59,12 @@ const generateQuestionPrompt = ai.definePrompt({
   output: {schema: GenerateQuestionOutputSchema},
   prompt: `You are a helpful assistant who generates multiple choice quiz questions on specific topics.
 
-  Generate {{{count}}} quiz question(s) based on the following topic:
+  Generate {{{count}}} quiz question(s) based on the following topic and difficulty level:
   Topic: {{{topic}}}
+  Difficulty: {{{level}}}
 
   For each question:
-  1. Provide a clear question text.
+  1. Provide a clear question text appropriate for the difficulty level.
   2. Provide exactly 4 multiple choice options.
   3. One of the options must be the correct answer.
   4. Indicate which of the options is the correct answer. The correct answer MUST be present in the options array.
