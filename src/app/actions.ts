@@ -7,6 +7,7 @@ const GenerateQuestionActionSchema = z.object({
   topic: z.string().min(1, 'Topic cannot be empty.'),
   count: z.coerce.number().int().min(1, 'You must generate at least one question.').max(50, 'Cannot generate more than 50 questions.'),
   level: z.string(),
+  quizType: z.string().min(1, "Quiz type cannot be empty."),
 });
 
 export async function generateQuestionAction(formData: FormData) {
@@ -15,15 +16,16 @@ export async function generateQuestionAction(formData: FormData) {
       topic: formData.get('topic'),
       count: formData.get('count'),
       level: formData.get('level'),
+      quizType: formData.get('quizType'),
     });
 
-    const result = await generateQuestion({ topic: validatedData.topic, count: validatedData.count, level: validatedData.level });
+    const result = await generateQuestion({ topic: validatedData.topic, count: validatedData.count, level: validatedData.level, quizType: validatedData.quizType });
     return { success: true, data: result };
   } catch (error) {
     console.error(error);
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const errorMessage = fieldErrors.topic?.[0] || fieldErrors.count?.[0] || fieldErrors.level?.[0] || 'Invalid input provided.';
+      const errorMessage = fieldErrors.topic?.[0] || fieldErrors.count?.[0] || fieldErrors.level?.[0] || fieldErrors.quizType?.[0] || 'Invalid input provided.';
       return { success: false, error: errorMessage };
     }
     return { success: false, error: 'Failed to generate question. Please try again.' };

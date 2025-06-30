@@ -32,6 +32,7 @@ import { generateQuestionAction } from '@/app/actions';
 import { type GenerateQuestionOutput } from '@/ai/flows/generate-question';
 import { useToast } from '@/hooks/use-toast';
 import { type Question } from '@/lib/questions';
+import { quizTypes } from '@/lib/quiz-types';
 
 interface GenerateQuestionDialogProps {
   onNewQuiz: (questions: Question[]) => void;
@@ -42,6 +43,8 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState('1');
   const [level, setLevel] = useState('Beginner');
+  const [quizType, setQuizType] = useState(quizTypes[0]);
+  const [otherQuizType, setOtherQuizType] = useState('');
   const [generatedQA, setGeneratedQA] = useState<GenerateQuestionOutput | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -67,15 +70,20 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
     setTopic('');
     setCount('1');
     setLevel('Beginner');
+    setQuizType(quizTypes[0]);
+    setOtherQuizType('');
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!topic || !count) {
+
+    const finalQuizType = quizType === 'Other' ? otherQuizType : quizType;
+
+    if (!topic || !count || !finalQuizType || (quizType === 'Other' && !otherQuizType)) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Please enter a topic and the number of questions.',
+        description: 'Please fill out all required fields.',
       });
       return;
     }
@@ -84,6 +92,8 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
     formData.append('topic', topic);
     formData.append('count', count);
     formData.append('level', level);
+    formData.append('quizType', finalQuizType);
+
     setGeneratedQA(null);
 
     startTransition(async () => {
@@ -156,6 +166,33 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
                   </Select>
                 </div>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="quiz-type">Quiz Type</Label>
+              <Select name="quizType" value={quizType} onValueChange={setQuizType}>
+                <SelectTrigger id="quiz-type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quizTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {quizType === 'Other' && (
+              <div className="space-y-2 animate-in fade-in">
+                <Label htmlFor="other-quiz-type">Please specify</Label>
+                <Input
+                  id="other-quiz-type"
+                  name="otherQuizType"
+                  value={otherQuizType}
+                  onChange={(e) => setOtherQuizType(e.target.value)}
+                  placeholder="e.g., Team Building Exercise"
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isPending || !topic || !count}>

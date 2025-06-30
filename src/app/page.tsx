@@ -27,7 +27,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-gradient-to-br from-fuchsia-100 via-violet-100 to-sky-100 dark:from-fuchsia-950 dark:via-violet-950 dark:to-sky-950 font-body bg-[length:200%_200%] animate-gradient-shift">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-gradient-to-br from-indigo-200 via-red-200 to-yellow-100 dark:from-indigo-900 dark:via-red-900 dark:to-yellow-900 font-body bg-[length:200%_200%] animate-gradient-shift">
       <div className="w-full max-w-4xl space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-headline text-primary">
