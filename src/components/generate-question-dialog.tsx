@@ -27,12 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Lightbulb, HelpCircle, Loader2, PlusCircle, Trash2 } from 'lucide-react';
+import { Lightbulb, HelpCircle, Loader2, PlusCircle, Trash2, Download } from 'lucide-react';
 import { generateQuestionAction } from '@/app/actions';
 import { type GenerateQuestionOutput } from '@/ai/flows/generate-question';
 import { useToast } from '@/hooks/use-toast';
 import { type Question } from '@/lib/questions';
 import { quizTypes } from '@/lib/quiz-types';
+import { DownloadPdfDialog } from './download-pdf-dialog';
 
 interface GenerateQuestionDialogProps {
   onNewQuiz: (questions: Question[]) => void;
@@ -40,6 +41,7 @@ interface GenerateQuestionDialogProps {
 
 export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState('1');
   const [level, setLevel] = useState('Beginner');
@@ -243,15 +245,26 @@ export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProp
                 ))}
               </Accordion>
             </div>
-            <div className="flex w-full items-center gap-2">
-              <Button onClick={handleCreateQuiz} className="flex-grow bg-accent text-accent-foreground hover:bg-accent/90">
+            <div className="flex w-full flex-wrap justify-center items-center gap-2">
+              <Button onClick={handleCreateQuiz} className="bg-accent text-accent-foreground hover:bg-accent/90">
                 <PlusCircle className="mr-2" />
                 Create Quiz with {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''}
+              </Button>
+               <Button variant="secondary" onClick={() => setIsDownloadDialogOpen(true)}>
+                <Download className="mr-2" />
+                Download PDF
               </Button>
               <Button variant="outline" size="icon" onClick={handleClearAndReset} aria-label="Clear results and reset form">
                   <Trash2 className="h-4 w-4" />
               </Button>
             </div>
+             {generatedQA && (
+              <DownloadPdfDialog
+                questions={generatedQA.questions}
+                isOpen={isDownloadDialogOpen}
+                onOpenChange={setIsDownloadDialogOpen}
+              />
+            )}
           </div>
         )}
       </DialogContent>
