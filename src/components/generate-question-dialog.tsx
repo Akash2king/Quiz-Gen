@@ -27,10 +27,10 @@ import { useToast } from '@/hooks/use-toast';
 import { type Question } from '@/lib/questions';
 
 interface GenerateQuestionDialogProps {
-  onAddQuestions: (questions: Question[]) => void;
+  onNewQuiz: (questions: Question[]) => void;
 }
 
-export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialogProps) {
+export function GenerateQuestionDialog({ onNewQuiz }: GenerateQuestionDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState('1');
@@ -47,9 +47,9 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
     }
   };
   
-  const handleAddQuestionsToQuiz = () => {
+  const handleCreateQuiz = () => {
     if (generatedQA) {
-      onAddQuestions(generatedQA.questions);
+      onNewQuiz(generatedQA.questions);
       handleOpenChange(false); // Close the dialog
     }
   };
@@ -97,7 +97,7 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">AI Question Generator</DialogTitle>
           <DialogDescription>
-            Enter a cybersecurity topic to generate new quiz questions using AI.
+            Enter any topic to generate new quiz questions using AI.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -112,7 +112,7 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 className="col-span-3"
-                placeholder="e.g., Phishing, Zero-Day Attack..."
+                placeholder="e.g., Roman History, The Solar System..."
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -182,9 +182,9 @@ export function GenerateQuestionDialog({ onAddQuestions }: GenerateQuestionDialo
               </Accordion>
             </div>
             <div className="flex w-full items-center gap-2">
-              <Button onClick={handleAddQuestionsToQuiz} className="flex-grow bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button onClick={handleCreateQuiz} className="flex-grow bg-accent text-accent-foreground hover:bg-accent/90">
                 <PlusCircle className="mr-2" />
-                Add {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''} to Quiz
+                Create Quiz with {generatedQA.questions.length} Question{generatedQA.questions.length > 1 ? 's' : ''}
               </Button>
               <Button variant="outline" size="icon" onClick={() => setGeneratedQA(null)} aria-label="Clear results">
                   <Trash2 className="h-4 w-4" />

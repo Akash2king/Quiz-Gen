@@ -3,22 +3,17 @@
 import { useState } from 'react';
 import { Quiz } from '@/components/quiz';
 import { GenerateQuestionDialog } from '@/components/generate-question-dialog';
-import { type Question, initialQuestions } from '@/lib/questions';
+import { type Question } from '@/lib/questions';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   return [...array].sort(() => Math.random() - 0.5);
 };
 
 export default function Home() {
-  const [questions, setQuestions] = useState<Question[]>(() => shuffleArray(initialQuestions));
+  const [questions, setQuestions] = useState<Question[]>([]);
 
-  const handleAddQuestions = (newQuestions: Question[]) => {
-    const currentQuestionTexts = new Set(questions.map(q => q.questionText));
-    const uniqueNewQuestions = newQuestions.filter(nq => !currentQuestionTexts.has(nq.questionText));
-
-    if (uniqueNewQuestions.length > 0) {
-        setQuestions(currentQuestions => shuffleArray([...currentQuestions, ...uniqueNewQuestions]));
-    }
+  const handleNewQuiz = (newQuestions: Question[]) => {
+    setQuestions(shuffleArray(newQuestions));
   };
 
   const handleRestart = () => {
@@ -30,15 +25,15 @@ export default function Home() {
       <div className="w-full max-w-4xl space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight font-headline text-primary">
-            CyberQuest
+            AI Quiz Generator
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Test your knowledge of cybersecurity. Answer the questions below or generate new ones with AI.
+            Create a quiz on any topic you can imagine using the power of AI.
           </p>
         </header>
 
         <div className="flex justify-center">
-          <GenerateQuestionDialog onAddQuestions={handleAddQuestions} />
+          <GenerateQuestionDialog onNewQuiz={handleNewQuiz} />
         </div>
 
         <div className="w-full">

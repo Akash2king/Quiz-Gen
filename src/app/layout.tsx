@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'CyberQuest',
-  description: 'An interactive cybersecurity quiz app.',
+  title: 'AI Quiz Generator',
+  description: 'Create and take quizzes on any topic with AI.',
 };
 
 export default function RootLayout({

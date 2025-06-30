@@ -1,7 +1,7 @@
 // src/ai/flows/generate-question.ts
 'use server';
 /**
- * @fileOverview A flow to generate cybersecurity quiz questions based on a given topic.
+ * @fileOverview A flow to generate quiz questions based on a given topic.
  *
  * - generateQuestion - A function that generates quiz questions.
  * - GenerateQuestionInput - The input type for the generateQuestion function.
@@ -12,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateQuestionInputSchema = z.object({
-  topic: z.string().describe('The cybersecurity topic to generate a question about.'),
+  topic: z.string().describe('The topic to generate a question about.'),
   count: z
     .number()
     .optional()
@@ -22,7 +22,7 @@ const GenerateQuestionInputSchema = z.object({
 export type GenerateQuestionInput = z.infer<typeof GenerateQuestionInputSchema>;
 
 const MultipleChoiceQuestionSchema = z.object({
-  questionText: z.string().describe('The generated cybersecurity question.'),
+  questionText: z.string().describe('The generated question.'),
   options: z.array(z.string()).length(4).describe('An array of 4 possible answers (multiple choice).'),
   correctAnswer: z.string().describe('The correct answer from the options array.'),
 }).refine(data => data.options.includes(data.correctAnswer), {
@@ -47,7 +47,7 @@ const generateQuestionPrompt = ai.definePrompt({
   name: 'generateQuestionPrompt',
   input: {schema: GenerateQuestionInputSchema},
   output: {schema: GenerateQuestionOutputSchema},
-  prompt: `You are a cybersecurity expert who generates multiple choice quiz questions on specific topics.
+  prompt: `You are a helpful assistant who generates multiple choice quiz questions on specific topics.
 
   Generate {{{count}}} quiz question(s) based on the following topic:
   Topic: {{{topic}}}

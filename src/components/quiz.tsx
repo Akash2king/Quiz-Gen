@@ -71,7 +71,13 @@ export function Quiz({ questions, onRestart }: QuizProps) {
   };
 
   if (internalQuestions.length === 0) {
-    return <Card className="w-full max-w-2xl mx-auto"><CardContent className="p-6 text-center text-muted-foreground">Loading Quiz...</CardContent></Card>;
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="p-6 text-center text-muted-foreground">
+          Click 'Generate with AI' to start a new quiz!
+        </CardContent>
+      </Card>
+    );
   }
 
   if (quizFinished) {
@@ -89,7 +95,7 @@ export function Quiz({ questions, onRestart }: QuizProps) {
             {score} / {internalQuestions.length}
           </p>
           <p className="text-muted-foreground">
-            {score / internalQuestions.length > 0.7 ? "Excellent work! You're a cybersecurity pro." : "Great effort! Keep learning and try again."}
+            {score / internalQuestions.length > 0.7 ? "Excellent work! You're a true expert." : "Great effort! Keep learning and try again."}
           </p>
         </CardContent>
         <CardFooter className="justify-center">
